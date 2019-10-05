@@ -2,11 +2,12 @@ import json
 import time
 import os
 
-index = list()
-folders_skipped = 0
-start_time = time.time()
 
-if __name__ == '__main__':
+def index():
+    index = list()
+    folders_skipped = 0
+    start_time = time.time()
+
     queue = ['/']
     while queue:
         folder_path = queue.pop(0)
@@ -26,9 +27,11 @@ if __name__ == '__main__':
             print('Breaking')
             break
 
-print(f'{folders_skipped} folders skipped')
-print(f'{len(index)} files indexed')
-print(f'{int(time.time() - start_time)} seconds')
+    print(f'{folders_skipped} folders skipped')
+    print(f'{len(index)} files indexed')
+    print(f'{int(time.time() - start_time)} seconds')
 
-with open('index.json', 'w') as index_file:
-    index_file.write(json.dumps(index))
+    return index
+
+# with open('index.json', 'w') as index_file:
+#     index_file.write(json.dumps(index))
