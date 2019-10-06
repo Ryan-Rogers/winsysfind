@@ -1,54 +1,37 @@
-import flask
-import finder
-import indexer
 import json
 
-app = flask.Flask(__name__)
-# index = indexer.index()
-with open('index.json', 'r') as index_file:
-    index = json.load(index_file)
+from flask import Flask
+from flask import render_template
+from flask import request
+
+import finder
+import indexer
+
+indexed_files = list()
+
+app = Flask(__name__, template_folder='templates')
+app.debug = True
 
 
 @app.route('/')
 def home():
+    return render_template('index.html', index_length=len(indexed_files))
 
-    return """
-        <!DOCTYPE html>
-        <head>
-            <title>winsysfind</title>
-        </head>
-        <body>
-            <input id="term" />
-            <div id="files"></div>
 
-            <script>
-                const $term = document.querySelector('#term');
-                const $files = document.querySelector('#files');
+@app.route('/index')
+def index():
+    global indexed_files
+    indexed_files = indexer.index()
 
-                const typeHandler = function(e) {
-                    var request = new XMLHttpRequest()
-                    var term = e.target.value
-                    var url = '/find?term=' + term
-
-                    request.open('GET', url, true)
-                    request.onload = function() {
-                        var data = this.response  // JSON.parse(this.response)
-                        $files.innerHTML = this.response;
-                    }
-                    request.send()
-                }
-
-                $term.addEventListener('input', typeHandler)
-            </script>
-        </body>
-    """
+    return str(len(indexed_files))
 
 
 @app.route('/find')
 def find():
-    term = flask.request.args.get('term')
-    results = finder.find(index, term)
-    return "<p>" + "<br>".join(results) + "<p>"  # json.dumps(results)
+    term = request.args.get('term')
+    files_found = finder.find(indexed_files, term)
+
+    return json.dumps(files_found)
 
 if __name__ == '__main__':
     app.run()

@@ -4,7 +4,7 @@ import os
 
 
 def index():
-    index = list()
+    indexed_files = list()
     folders_skipped = 0
     start_time = time.time()
 
@@ -20,7 +20,7 @@ def index():
                     if path.is_dir():
                         queue.append(f'{folder_path}{path.name}/')
                     else:
-                        index.append(f'{folder_path}{path.name}')
+                        indexed_files.append(f'{folder_path}{path.name}')
         except PermissionError:
             folders_skipped += 1
         except KeyboardInterrupt:
@@ -28,10 +28,12 @@ def index():
             break
 
     print(f'{folders_skipped} folders skipped')
-    print(f'{len(index)} files indexed')
+    print(f'{len(indexed_files)} files indexed')
     print(f'{int(time.time() - start_time)} seconds')
 
-    return index
+    return indexed_files
 
-# with open('index.json', 'w') as index_file:
-#     index_file.write(json.dumps(index))
+if __name__ == '__main__':
+    indexed_files = index()
+    with open('index.json', 'w') as index_file:
+        index_file.write(json.dumps(indexed_files))
